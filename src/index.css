@@ -2,7 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
+.english_font {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+.bangla_font {
+  font-family: "Noto Sans Bengali", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
 
+
+
+
+.bg_light {
+	background-color: #dddcff;
+	color: #01001a;
+	transition: .3s ease;
+}
+
+.bg_dark {
+	background-color: #01001a;
+	color: #dddcff;
+	transition: .3s ease;
+}
+
+.text-glow {
+	text-shadow: 0 0 5px rgba(255, 255, 255, 0.7), 0 0 10px rgba(255, 255, 255, 0.5), 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.img-glow {
+	box-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+.div-glow{
+	box-shadow: 0 0 10px rgba(56, 178, 172, 0.7), 
+              0 0 20px rgba(56, 178, 172, 0.5), 
+              0 0 30px rgba(56, 178, 172, 0.3);
+}
 
 .tree-line {
   position: relative;
