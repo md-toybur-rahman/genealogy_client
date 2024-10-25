@@ -18,16 +18,7 @@ const Genealogy = ({ data, language, loading }) => {
 				className="cursor-pointer flex flex-col lg:flex-row gap-3 items-center"
 			>
 				<div className={`px-1 lg:px-4 py-1 cursor-pointer bg-transparent border border-teal-500 transition-shadow duration-200 shadow-md shadow-teal-500 rounded-md ${data.children ? 'hover:text-teal-500' : ''}`}>
-					<div className=''>{loading ? <ThreeDots
-						visible={true}
-						height="20"
-						width="30"
-						color="#4fa94d"
-						radius="9"
-						ariaLabel="three-dots-loading"
-						wrapperStyle={{}}
-						wrapperClass=""
-					/> : data.name}</div>
+					<div className=''>{data.name}</div>
 				</div>
 				{data.children ? <span><span className='hidden lg:flex items-center text-glow'><FaAngleDoubleRight /><FaAngleDoubleRight /></span> <span className='lg:hidden'><FaArrowDown className='text-xl text-glow' /></span></span> : ''}
 			</button>

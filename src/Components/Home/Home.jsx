@@ -1,16 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Genealogy from '../Genealogy/Genealogy';
 import { MdComment, MdOutlineClose } from "react-icons/md";
-import Navbar from '../Navbar/Navbar';
+import { IoCheckmarkDoneSharp } from "react-icons/io5";
+import { DNA, ThreeDots } from 'react-loader-spinner';
+import { AuthContext } from '../../Providers/AuthProviders';
+
 
 const Home = () => {
-	const [lan, setLan] = useState(false);
+	const { user, googleSignIn, userDetectedLoading, lan, setLan } = useContext(AuthContext);
+	// const [lan, setLan] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [genealogy, setGenealogy] = useState({});
 	const [banglaGenealogy, setBanglaGenealogy] = useState({});
+	const [currentUser, setCurrentUser] = useState([]);
+	useEffect(() => {
+		fetch(`http://localhost:2000/users`)
+			.then(res => res.json())
+			.then(data => {
+				const findCurrentUser = data.filter(singleUser => singleUser.email == user.email);
+				setCurrentUser(findCurrentUser);
+			})
+	}, [user]);
 	useEffect(() => {
 		setLoading(true);
-		fetch('https://genealogy-server.vercel.app/genealogy_english')
+		fetch('genealogy.json')
 			.then(res => res.json())
 			.then(data => {
 				setGenealogy(data[0]);
@@ -19,7 +32,7 @@ const Home = () => {
 	}, [])
 	useEffect(() => {
 		setLoading(true)
-		fetch('https://genealogy-server.vercel.app/genealogy_bangla')
+		fetch('genealogy_bangla.json')
 			.then(res => res.json())
 			.then(data => {
 				setBanglaGenealogy(data[0]);
@@ -49,10 +62,12 @@ const Home = () => {
 		const number = form.number.value;
 		const comment = form.comment.value;
 		const date = new Date();
+		const fullDate = date.toDateString()
+		const time = date.toLocaleTimeString();
 
-		const userComment = { name, number, comment, date: date.toString() }
-		console.log(userComment);
-		fetch('http://localhost:2000/comments', {
+		const userComment = { name, number, comment, date: `${fullDate}`, time }
+
+		fetch('https://genealogy-server.onrender.com/comments', {
 			method: 'POST',
 			headers: {
 				'content-type': 'application/json'
@@ -61,13 +76,33 @@ const Home = () => {
 		})
 			.then(res => res.json())
 			.then(data => {
-				console.log(data);
 				form.reset();
+				const alertBox = document.getElementById('alert_box');
+
+				alertBox.classList.remove('hidden');
+				alertBox.classList.add('flex');
+				handleCloseComment();
+				setTimeout(() => {
+					alertBox.classList.remove('flex');
+					alertBox.classList.add('hidden');
+				}, 2000);
 			});
 	}
 
 	return (
 		<div className={`${!lan ? 'english_font' : 'bangla_font'}`}>
+			{/* Alert */}
+			<div id='alert_box' className={`fixed h-full w-full bg-black/40 z-30 hidden items-center justify-center px-5`}>
+				<div className='w-[400px] h-fit py-10 bg_dark div-glow rounded-xl relative overflow-hidden flex flex-col gap-10 items-center justify-center'>
+					<div className='w-[60px] h-[60px] flex items-center justify-center rounded-full div-glow'><IoCheckmarkDoneSharp className='checkmark text-teal-500' /> </div>
+					<div>
+						<h1>{!lan ? 'Message Submitted Successfully' : 'মন্তব্য সফলভাবে জমা দেওয়া হয়েছে'}</h1>
+						{/* <h1>Sign Up Successfully</h1> */}
+					</div>
+
+				</div>
+			</div>
+			{/* Modal Comment Box */}
 			<div id='comment_box' className={`fixed h-full w-full bg-black/40 z-20 hidden items-center justify-center px-5`}>
 				<div className='w-[600px] h-fit py-5 bg_dark div-glow rounded-xl relative overflow-hidden flex items-center justify-center'>
 					<div onClick={handleCloseComment} className='absolute right-4 top-4 w-fit p-2 cursor-pointer duration-300 text-2xl hover:text-teal-500'><MdOutlineClose /></div>
@@ -90,17 +125,28 @@ const Home = () => {
 					</form>
 				</div>
 			</div>
-			<div className="min-h-screen flex items-center justify-center bg_dark pt-10">
+			<div className="min-h-screen flex items-center justify-center bg_dark pt-20">
 				<div className="flex justify-center">
 					<div className="">
-						{/* <h1 className='cursor-pointer bg-transparent border border-teal-500 transition-shadow duration-200 shadow-md shadow-teal-500 w-fit px-2 lg:px-4 py-1 rounded-lg fixed top-3 left-4 lg:top-10 lg:left-20 bg_dark text-sm md:text-base'>Last Update: 28/07/24</h1>
-
-						<h1 onClick={() => { setLan(!lan) }} className='cursor-pointer bg-transparent border border-teal-500 transition-shadow duration-200 shadow-md shadow-teal-500 w-fit px-2 lg:px-4 py-1 rounded-lg fixed top-3 right-4 lg:top-10 lg:right-20 bg_dark text-sm md:text-base'>{!lan ? 'বাংলা' : 'English'}</h1> */}
-						<Navbar lan={lan} setLan={setLan}></Navbar>
-						<button onClick={handleCommentBox} className='cursor-pointer bg-transparent div-glow text-glow w-fit p-4 rounded-full shadow-lg fixed bottom-3 right-4 lg:bottom-10 lg:right-20 bg_dark'><MdComment className='text-2xl' /></button>
+						
+						<button onClick={handleCommentBox} className={`cursor-pointer bg-transparent div-glow text-glow w-fit p-4 rounded-full shadow-lg ${user ? 'fixed' : 'hidden'} bottom-3 right-4 lg:bottom-10 lg:right-20 bg_dark`}><MdComment className='text-2xl' /></button>
 
 						<div className='flex flex-col items-center gap-5 mt-12 md:mt-20'>
-							<Genealogy data={!lan ? genealogy : banglaGenealogy} language={!lan ? 'English' : "Bangla"} loading={loading}></Genealogy>
+							{
+								loading && userDetectedLoading ?
+									<div className='flex flex-col items-center'>
+										<DNA
+											visible={true}
+											height="80"
+											width="80"
+											ariaLabel="dna-loading"
+											wrapperStyle={{}}
+											wrapperClass="dna-wrapper"
+										/>
+										<h1 className='text-xl'>এক্কানা খাড়ান</h1>
+									</div> :
+									<Genealogy data={!lan ? genealogy : banglaGenealogy} language={!lan ? 'English' : "Bangla"}></Genealogy>
+							}
 						</div>
 					</div>
 				</div>
