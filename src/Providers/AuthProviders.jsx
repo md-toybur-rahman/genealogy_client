@@ -15,7 +15,6 @@ const AuthProviders = ({ children }) => {
 	const [isProfile, setIsProfile] = useState(false);
 	const [lan, setLan] = useState(false);
 
-
 	const googleSignIn = () => {
 		setLoading(true);
 		return signInWithPopup(auth, googleProvider);
@@ -24,21 +23,22 @@ const AuthProviders = ({ children }) => {
 	const logOut = () => {
 		setLoading(true);
 		setUser(false);
-		return signOut(auth)
+		return signOut(auth);
 	}
+
 	useEffect(() => {
-		onAuthStateChanged(auth, (currentuUser) => {
+		const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
 			setUserDetectedLoading(true);
-			if (currentuUser) {
-			  setUser(currentuUser)
-			  setUserDetectedLoading(false)
-			  setLoading(false)
+			if (currentUser) {
+				setUser(currentUser);
 			} else {
-			  setUser(false)
-			  setUserDetectedLoading(false);
+				setUser(false);
 			}
-		  });
-	}, [loading])
+			setUserDetectedLoading(false);
+			setLoading(false);
+		});
+		return () => unsubscribe();
+	}, []);
 
 	const authCollection = {
 		user,

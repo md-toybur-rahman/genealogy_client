@@ -1,34 +1,35 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { AuthContext } from '../Providers/AuthProviders';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { DNA } from 'react-loader-spinner';
 
 const PrivateRoute = ({ children }) => {
-	const { user } = useContext(AuthContext);
-	const [currentUser, setCurrentUser] = useState([]);
-	const navigate = useNavigate();
-	useEffect(() => {
-		fetch(`http://localhost:2000/users`)
-			.then(res => res.json())
-			.then(data => {
-				const findCurrentUser = data.filter(singleUser => singleUser.email == user.email);
-				setCurrentUser(findCurrentUser);
-			})
-	}, [user]);
-	// useEffect(() => {
-	// 	if (!user) {
-	// 		navigate('/signup')
-	// 	} else {
-	// 		children
-	// 	}
-	// }, [user])
-	if(!user) {
-		return navigate('/signup')
-	}
-	else {
-		return children
+	const { user, loading } = useContext(AuthContext);
+
+	// Show a loading indicator while checking auth state
+	if (loading) {
+		return <div className='h-screen w-full flex bg-[#01001a] items-center justify-center gap-5'>
+			<div className='flex flex-col items-center pt-20'>
+				<DNA
+					visible={true}
+					height="80"
+					width="80"
+					ariaLabel="dna-loading"
+					wrapperStyle={{}}
+					wrapperClass="dna-wrapper"
+				/>
+				<h1 className='text-xl text-white'>এক্কানা খাড়ান</h1>
+			</div>
+		</div>;
 	}
 
+	// Redirect to signup if no user is found
+	if (!user) {
+		return <Navigate to="/signup" replace />;
+	}
 
+	// Render children if user is authenticated
+	return children;
 };
 
 export default PrivateRoute;

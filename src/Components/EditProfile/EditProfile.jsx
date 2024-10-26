@@ -9,7 +9,7 @@ const EditProfile = () => {
 	const navigate = useNavigate();
 	const [currentUser, setCurrentUser] = useState([]);
 	useEffect(() => {
-		fetch(`http://localhost:2000/users`)
+		fetch(`https://genealogy-server.onrender.com/users`)
 			.then(res => res.json())
 			.then(data => {
 				const findCurrentUser = data.filter(singleUser => singleUser.email == user.email);
@@ -23,7 +23,7 @@ const EditProfile = () => {
 		const fathers_name = form.fathers_name.value;
 		const phone_number = form.number.value;
 		const updatedData = { name, fathers_name, phone_number };
-		fetch(`http://localhost:2000/users/${currentUser[0]._id}`, {
+		fetch(`https://genealogy-server.onrender.com/users/${currentUser[0]._id}`, {
 			method: 'PUT',
 			headers: {
 				'content-type': 'application/json'

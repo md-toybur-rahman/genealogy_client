@@ -14,7 +14,7 @@ const Home = () => {
 	const [banglaGenealogy, setBanglaGenealogy] = useState({});
 	const [currentUser, setCurrentUser] = useState([]);
 	useEffect(() => {
-		fetch(`http://localhost:2000/users`)
+		fetch(`https://genealogy-server.onrender.com/users`)
 			.then(res => res.json())
 			.then(data => {
 				const findCurrentUser = data.filter(singleUser => singleUser.email == user.email);

@@ -8,7 +8,7 @@ const SignUp = () => {
 	const [currentUser, setCurrentUser] = useState([]);
 	const navigate = useNavigate();
 	useEffect(() => {
-		fetch(`http://localhost:2000/users`)
+		fetch(`https://genealogy-server.onrender.com/users`)
 			.then(res => res.json())
 			.then(data => {
 				const findCurrentUser = data.filter(singleUser => singleUser.email == user.email);
@@ -19,12 +19,12 @@ const SignUp = () => {
 		googleSignIn()
 			.then(data => {
 				const userData = { name: '', fathers_name: '', phone_number: '', email: data.user.email, photoURL: data.user.photoURL }
-				fetch(`http://localhost:2000/users`)
+				fetch(`https://genealogy-server.onrender.com/users`)
 					.then(res => res.json())
 					.then(ExsistedData => {
 						const isExistData = ExsistedData.filter(isExist => isExist.email == data.user.email);
 						if (isExistData.length == 0) {
-							fetch(`http://localhost:2000/users`, {
+							fetch(`https://genealogy-server.onrender.com/users`, {
 								method: 'POST',
 								headers: {
 									'content-type': 'application/json'
