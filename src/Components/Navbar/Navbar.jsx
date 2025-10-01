@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FaRegEdit, FaRegUser, FaSortDown } from "react-icons/fa";
 import { AuthContext } from '../../Providers/AuthProviders';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 const Navbar = () => {
@@ -26,15 +26,20 @@ const Navbar = () => {
 		navigate('/edit_profile');
 	}
 	return (
-		<div className='w-full fixed top-0 left-0 py-5 bg_dark div-glow flex items-center justify-between px-5 md:px-10 h-[80px]'>
+		<div className='w-full fixed top-0 left-0 py-5 bg_dark div-glow flex items-center justify-between px-5 md:px-10 h-[80px] z-50'>
 
-			<h1 className='cursor-pointer bg-transparent border border-teal-500 transition-shadow duration-200 shadow-md shadow-teal-500 w-fit px-2 lg:px-4 py-1 rounded-lg text-sm md:text-base'>Last Update: Work Running</h1>
+			<Link to={`/`} className='flex items-center gap-2'>
+				<img className='w-16 h-16' src="chomor_uddin_logo.png" alt="" />
+				<h1 className='text-glow english_font'>Chomor Uddin <br /> Hawladar</h1>
+			</Link>
 			<div>
 				{
 					user ?
 						<div>
 							<div className='flex items-center gap-8'>
-								<h1 onClick={() => setLan(!lan) } className='cursor-pointer bg-transparent border border-teal-500 transition-shadow duration-200 shadow-md shadow-teal-500 w-fit px-2 lg:px-4 py-1 rounded-lg  text-sm md:text-base'>{!lan ? 'বাংলা' : 'English'}</h1>
+								<Link to={`/all_users`} className='cursor-pointer bg-transparent border border-teal-500 transition-shadow duration-200 shadow-md shadow-teal-500 w-fit px-2 lg:px-4 py-1 rounded-lg  text-sm md:text-base'>{!lan ? 'All Users' : 'ব্যবহারকারীগণ'}</Link>
+								<Link to={`/comments`} className='cursor-pointer bg-transparent border border-teal-500 transition-shadow duration-200 shadow-md shadow-teal-500 w-fit px-2 lg:px-4 py-1 rounded-lg  text-sm md:text-base'>{!lan ? 'Comments' : 'মন্তব্যসমূহ'}</Link>
+								<h1 onClick={() => setLan(!lan)} className='cursor-pointer bg-transparent border border-teal-500 transition-shadow duration-200 shadow-md shadow-teal-500 w-fit px-2 lg:px-4 py-1 rounded-lg  text-sm md:text-base'>{!lan ? 'বাংলা' : 'English'}</h1>
 								<div id='profileContainerSwitch' onClick={() => setIsProfile(!isProfile)} className='flex items-center gap-4 cursor-pointer'>
 									<div className='h-[40px] w-[40px] rounded-full div-glow flex items-center justify-center'>
 										{
@@ -52,7 +57,7 @@ const Navbar = () => {
 										!user && !usersDetails[0]?.photoURL ?
 											<FaRegUser className='text-4xl' /> : <img className='overflow-hidden rounded-full' src={usersDetails[0]?.photoURL} alt="" />
 									}
-									<div className='absolute bg-black p-2 rounded-full -bottom-2 -right-2 div-glow cursor-pointer'>
+									<div className='hidden absolute bg-black p-2 rounded-full -bottom-2 -right-2 div-glow cursor-pointer'>
 										<FaRegEdit></FaRegEdit>
 									</div>
 								</div>

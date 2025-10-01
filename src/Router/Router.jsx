@@ -7,6 +7,7 @@ import SignUp from "../Components/SignUp/SignUp";
 import PrivateRoute from "./PrivateRoute";
 import Layout from "../Components/Layout/Layout";
 import EditProfile from "../Components/EditProfile/EditProfile";
+import All_Members from "../Components/All_Members/All_Members";
 
 
 const router = createBrowserRouter([
@@ -19,10 +20,14 @@ const router = createBrowserRouter([
 				path: '/',
 				element: <PrivateRoute><Home></Home></PrivateRoute>
 			},
-			
 			{
 				path: "/comments",
-				element: <Comments></Comments>
+				element: <PrivateRoute><Comments></Comments></PrivateRoute>
+			},
+			{
+				path: "/all_users",
+				element: <PrivateRoute><All_Members></All_Members></PrivateRoute>,
+				loader: () => fetch(`https://genealogy-server.onrender.com/users`)
 			}
 		]
 	},

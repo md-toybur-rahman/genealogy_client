@@ -1,7 +1,9 @@
 import { comment } from 'postcss';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../../Providers/AuthProviders';
 
 const Comments = () => {
+	const { user } = useContext(AuthContext);
 	const [comments, setComments] = useState([]);
 	useEffect(() => {
 		fetch(`https://genealogy-server.onrender.com/comments`)
@@ -20,7 +22,7 @@ const Comments = () => {
 			<div className='grid lg:grid-cols-2 gap-4 lg:gap-10'>
 				{
 					comments.map(comment => <div key={comment.index}>
-						<div className='lg:h-[250px] w-full div-glow text-lg p-3 overflow-y-scroll comment_card mt-10 rounded-xl flex flex-col'>
+						<div className='w-full div-glow text-lg p-3 overflow-y-scroll comment_card mt-10 rounded-xl flex flex-col'>
 							<div className='lg:flex gap-10'>
 								<div className='lg:border-r-2 pr-10'>
 									<h1>Name : {comment.name}</h1>
@@ -32,9 +34,12 @@ const Comments = () => {
 									<h1>Comment : {comment.comment}</h1>
 								</div>
 							</div>
-							<div onClick={() => handleDone(comment._id)} className='flex-grow flex items-end justify-center mt-8'>
-								<button className='border border-teal-500 div-glow px-5 py-1 rounded-lg'>Done</button>
-							</div>
+							{
+								user?.email === 'toyburrahman48@gmail.com' ?
+									<div onClick={() => handleDone(comment._id)} className='flex-grow flex items-end justify-center mt-8'>
+										<button className='border border-teal-500 div-glow px-5 py-1 rounded-lg'>Done</button>
+									</div> : ''
+							}
 						</div>
 					</div>)
 				}

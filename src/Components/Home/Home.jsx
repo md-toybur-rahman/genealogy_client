@@ -128,8 +128,9 @@ const Home = () => {
 			<div className="min-h-screen flex items-center justify-center bg_dark pt-20">
 				<div className="flex justify-center">
 					<div className="">
-						
+
 						<button onClick={handleCommentBox} className={`cursor-pointer bg-transparent div-glow text-glow w-fit p-4 rounded-full shadow-lg ${user ? 'fixed' : 'hidden'} bottom-3 right-4 lg:bottom-10 lg:right-20 bg_dark`}><MdComment className='text-2xl' /></button>
+						<h1 className={`cursor-pointer bg-transparent text-glow w-fit p-4 rounded-full shadow-lg ${user ? 'fixed' : 'hidden'} bottom-3 left-4 lg:bottom-3 lg:right-20 bg_dark`}>Site Owner: Toybur Rahman Tuhin <br />Father's Name: Md Ali Hossain <br /> Mobile No: 01773345189</h1>
 
 						<div className='flex flex-col items-center gap-5 mt-12 md:mt-20'>
 							{
