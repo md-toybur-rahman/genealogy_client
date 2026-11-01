@@ -1,10 +1,11 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { AuthContext } from '../Providers/AuthProviders';
 import { Navigate } from 'react-router-dom';
 import { DNA } from 'react-loader-spinner';
 
+// eslint-disable-next-line react/prop-types
 const PrivateRoute = ({ children }) => {
-	const { user, loading } = useContext(AuthContext);
+	const { user, loading, profile, profileLoading, profileError, refreshProfile } = useContext(AuthContext);
 
 	// Show a loading indicator while checking auth state
 	if (loading) {
@@ -27,6 +28,9 @@ const PrivateRoute = ({ children }) => {
 	if (!user) {
 		return <Navigate to="/signup" replace />;
 	}
+	if (profileLoading) return <div className="bg_dark min-h-screen flex items-center justify-center">Profile যাচাই হচ্ছে…</div>;
+	if (profileError) return <div className="bg_dark min-h-screen flex flex-col gap-4 items-center justify-center px-5"><p role="alert">{profileError}</p><button className="border border-teal-500 rounded-lg px-5 py-2" onClick={() => refreshProfile().catch(() => {})}>আবার চেষ্টা করুন</button></div>;
+	if (!profile?.profile_complete) return <Navigate to="/edit_profile" replace />;
 
 	// Render children if user is authenticated
 	return children;

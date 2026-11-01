@@ -1,9 +1,18 @@
-# React + Vite
+# Genealogy client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React and Vite frontend for the family tree. Signed-in members complete a profile before using the app. They can request member additions and name corrections; admins review requests and manage user roles in the Admin dashboard.
 
-Currently, two official plugins are available:
+## Environment
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-# genealogy_client
+Keep Firebase client settings in `.env.local`.
+
+- `VITE_API_URL`: optional backend override. The default is `https://genealogy-server.onrender.com`; set `http://localhost:2000` for local backend development.
+
+Configure `FIREBASE_PROJECT_ID`, `GENEALOGY_ADMIN_EMAIL`, and `IMGBB_API_KEY` in the backend environment as described in the server README. The Imgbb key stays server-side.
+
+## Run
+
+```sh
+npm install
+npm run dev
+```
