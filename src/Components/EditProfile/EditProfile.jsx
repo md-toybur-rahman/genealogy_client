@@ -22,7 +22,9 @@ const isImgbbUrl = value => {
 const EditProfile = () => {
 	const { user, profile, profileLoading, profileError, refreshProfile } = useContext(AuthContext);
 	const navigate = useNavigate();
-	const [form, setForm] = useState({ name: '', bangla_name: '', fathers_name: '', phone_number: '', phone_visibility: 'private' });
+	const [form, setForm] = useState({ name: '', bangla_name: '', fathers_name: '', phone_number: '', phone_visibility: 'private', is_family_member: null, family_member_id: '' });
+	const [familyMembers, setFamilyMembers] = useState([]);
+	const [memberSearch, setMemberSearch] = useState('');
 	const [photoURL, setPhotoURL] = useState('');
 	const [imageFile, setImageFile] = useState(null);
 	const [saving, setSaving] = useState(false);
@@ -33,11 +35,32 @@ const EditProfile = () => {
 		setForm({
 			name: profile.name || '', bangla_name: profile.bangla_name || '', fathers_name: profile.fathers_name || '',
 			phone_number: profile.phone_number || '', phone_visibility: profile.phone_visibility || 'private',
+			is_family_member: typeof profile.is_family_member === 'boolean' ? profile.is_family_member : null,
+			family_member_id: profile.family_member_id || '',
 		});
 		setPhotoURL(isImgbbUrl(profile.photoURL) ? profile.photoURL : '');
+		setMemberSearch(profile.name || '');
 	}, [profile]);
 
+	useEffect(() => {
+		let active = true;
+		apiFetch(user, '/family/members')
+			.then(members => { if (active) setFamilyMembers(members); })
+			.catch(loadError => { if (active) setError(loadError.message || 'Family member তালিকা load করা যায়নি।'); });
+		return () => { active = false; };
+	}, [user]);
+
+	const selectedFamilyMember = familyMembers.find(member => member.family_member_id === form.family_member_id);
+	const matchingFamilyMembers = memberSearch.trim() ? familyMembers.filter(member =>
+		[member.name, member.bangla_name, member.fathers_name, member.bangla_fathers_name]
+			.some(value => value?.toLocaleLowerCase().includes(memberSearch.trim().toLocaleLowerCase()))
+	).slice(0, 12) : [];
+
 	const updateField = event => setForm(previous => ({ ...previous, [event.target.name]: event.target.value }));
+	const selectFamilyMember = member => {
+		setForm(previous => ({ ...previous, is_family_member: true, family_member_id: member.family_member_id, name: member.name, bangla_name: member.bangla_name, fathers_name: member.fathers_name || '' }));
+		setMemberSearch(`${member.name} — বাবা: ${member.fathers_name || 'তালিকায় নেই'}`);
+	};
 	const handleImage = event => {
 		const file = event.target.files?.[0];
 		if (!file) return;
@@ -83,9 +106,24 @@ const EditProfile = () => {
 				<p className="text-center opacity-80 mt-2">সিস্টেম ব্যবহার করতে নিজের তথ্যগুলো পূরণ করুন।</p>
 				{profileError && <p role="alert" className="text-rose-300 mt-4">{profileError}</p>}
 				<form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-					<label className="flex flex-col gap-2">English name<input required maxLength={120} name="name" value={form.name} onChange={updateField} className="border border-teal-500 bg-transparent rounded-md px-3 py-2" /></label>
-					<label className="flex flex-col gap-2">বাংলা নাম<input required maxLength={120} name="bangla_name" value={form.bangla_name} onChange={updateField} className="border border-teal-500 bg-transparent rounded-md px-3 py-2" /></label>
-					<label className="flex flex-col gap-2">Father&apos;s name<input required maxLength={120} name="fathers_name" value={form.fathers_name} onChange={updateField} className="border border-teal-500 bg-transparent rounded-md px-3 py-2" /></label>
+					<fieldset className="space-y-3"><legend className="font-medium mb-2">আপনি কি ছমর উদ্দিনের পরিবারের সদস্য?</legend>
+						<label className="flex items-center gap-2"><input required type="radio" name="is_family_member" checked={form.is_family_member === true} onChange={() => setForm(previous => ({ ...previous, is_family_member: true, family_member_id: '' }))} />হ্যাঁ, আমি এই পরিবারের সদস্য</label>
+						<label className="flex items-center gap-2"><input required type="radio" name="is_family_member" checked={form.is_family_member === false} onChange={() => setForm(previous => ({ ...previous, is_family_member: false, family_member_id: '' }))} />না, আমি এই পরিবারের সদস্য নই</label>
+					</fieldset>
+					{form.is_family_member === true && <div className="space-y-2">
+						<label className="flex flex-col gap-2">পরিবারের তালিকা থেকে নিজের নাম ও বাবার নাম খুঁজে বেছে নিন<input required={!selectedFamilyMember} autoComplete="off" value={memberSearch} onChange={event => { setMemberSearch(event.target.value); setForm(previous => ({ ...previous, family_member_id: '' })); }} placeholder="নাম বা বাবার নাম লিখুন…" className="border border-teal-500 bg-transparent rounded-md px-3 py-2" /></label>
+						{memberSearch.trim() && !selectedFamilyMember && <div className="max-h-64 overflow-y-auto border border-teal-500/60 rounded-lg">
+							{matchingFamilyMembers.length ? matchingFamilyMembers.map(member => <button type="button" key={member.family_member_id} onClick={() => selectFamilyMember(member)} className="block w-full text-left px-3 py-2 hover:bg-teal-900/40 border-b border-teal-500/20 last:border-0">
+								<strong>{member.name} / {member.bangla_name}</strong><span className="block text-sm opacity-75">বাবা: {member.fathers_name || 'তালিকায় নেই'} / {member.bangla_fathers_name || 'তালিকায় নেই'}</span>
+							</button>) : <p className="px-3 py-2">এই নামে সদস্য পাওয়া যায়নি। তালিকায় না থাকলে “সদস্য নই” বেছে profile-এর নাম লিখুন।</p>}
+						</div>}
+						{selectedFamilyMember && <div className="rounded-lg border border-teal-500 p-3"><p>{selectedFamilyMember.name} / {selectedFamilyMember.bangla_name}</p><p className="text-sm opacity-75">বাবা: {selectedFamilyMember.fathers_name || 'তালিকায় নেই'} / {selectedFamilyMember.bangla_fathers_name || 'তালিকায় নেই'}</p><button type="button" onClick={() => { setForm(previous => ({ ...previous, family_member_id: '' })); setMemberSearch(''); }} className="mt-2 text-teal-200 underline">অন্য সদস্য বেছে নিন</button></div>}
+					</div>}
+					{form.is_family_member === false && <>
+						<label className="flex flex-col gap-2">English name<input required maxLength={120} name="name" value={form.name} onChange={updateField} className="border border-teal-500 bg-transparent rounded-md px-3 py-2" /></label>
+						<label className="flex flex-col gap-2">বাংলা নাম<input required maxLength={120} name="bangla_name" value={form.bangla_name} onChange={updateField} className="border border-teal-500 bg-transparent rounded-md px-3 py-2" /></label>
+						<label className="flex flex-col gap-2">Father&apos;s name<input required maxLength={120} name="fathers_name" value={form.fathers_name} onChange={updateField} className="border border-teal-500 bg-transparent rounded-md px-3 py-2" /></label>
+					</>}
 					<label className="flex flex-col gap-2">Mobile number<input required maxLength={30} name="phone_number" value={form.phone_number} onChange={updateField} className="border border-teal-500 bg-transparent rounded-md px-3 py-2" /></label>
 					<label className="flex flex-col gap-2">মোবাইল নম্বর কে দেখতে পারবে?
 						<select name="phone_visibility" value={form.phone_visibility} onChange={updateField} className="border border-teal-500 bg-[#01001a] rounded-md px-3 py-2">

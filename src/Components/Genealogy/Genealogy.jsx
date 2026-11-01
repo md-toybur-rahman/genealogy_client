@@ -2,12 +2,11 @@
 import { useState } from 'react';
 import { FaArrowDown, FaAngleDoubleRight, FaRegEdit, FaRegImage } from 'react-icons/fa';
 
-const normalizeName = value => value?.trim().toLocaleLowerCase();
-
-const Genealogy = ({ data, language, profiles = [], path = [], onShowPhoto, onRequestCorrection, expandedPaths = [], highlightedPath = null }) => {
+const Genealogy = ({ data, language, profiles = [], path = [], fatherName = '', onShowPhoto, onRequestCorrection, expandedPaths = [], highlightedPath = null }) => {
 	const [showChildren, setShowChildren] = useState(false);
 	const children = Array.isArray(data?.children) ? data.children : [];
-	const person = profiles.find(item => normalizeName(item.name) === normalizeName(data.name) || normalizeName(item.bangla_name) === normalizeName(data.name));
+	const person = profiles.find(item => item.family_member_id && item.family_member_id === data.familyMemberId);
+	const photoURL = person?.photoURL || data.photoURL;
 	const canExpand = children.length > 0;
 	const isExpanded = showChildren || expandedPaths.some(item => item.join('.') === path.join('.'));
 	const isHighlighted = highlightedPath?.join('.') === path.join('.');
@@ -19,13 +18,13 @@ const Genealogy = ({ data, language, profiles = [], path = [], onShowPhoto, onRe
 					<div className={`px-1 lg:px-4 py-1 bg-transparent border border-teal-500 transition-shadow duration-200 shadow-md shadow-teal-500 rounded-md ${canExpand ? 'hover:text-teal-500' : ''}`}>{data.name}</div>
 					{canExpand && <span><span className="hidden lg:flex items-center text-glow"><FaAngleDoubleRight /><FaAngleDoubleRight /></span><span className="lg:hidden"><FaArrowDown className="text-xl text-glow" /></span></span>}
 				</button>
-				{person?.photoURL && <button type="button" aria-label={`${data.name} profile photo`} title="View profile photo" onClick={() => onShowPhoto?.(person)} className="text-teal-300 hover:text-teal-100 p-1"><FaRegImage /></button>}
-				<button type="button" aria-label={`Request name correction for ${data.name}`} title="নাম সংশোধনের request" onClick={() => onRequestCorrection?.({ language: language === 'Bangla' ? 'bangla' : 'english', targetPath: path, currentName: data.name })} className="text-teal-300 hover:text-teal-100 p-1"><FaRegEdit /></button>
+				{photoURL && <button type="button" aria-label={`${data.name} profile photo`} title="View profile photo" onClick={() => onShowPhoto?.({ ...person, name: data.name, photoURL })} className="text-teal-300 hover:text-teal-100 p-1"><FaRegImage /></button>}
+				<button type="button" aria-label={`Request name correction for ${data.name}`} title="নাম সংশোধনের request" onClick={() => onRequestCorrection?.({ language: language === 'Bangla' ? 'bangla' : 'english', targetPath: path, currentName: data.name, fatherName })} className="text-teal-300 hover:text-teal-100 p-1"><FaRegEdit /></button>
 			</div>
 			{isExpanded && canExpand && <div className="mx-2 lg:mx-4 my-4 div-glow rounded-lg p-1">
 				{children.map((child, index) => <div key={`${path.join('.')}-${index}`} className="flex lg:items-center">
 					<h2 className="pt-4">{index + 1}.</h2>
-					<Genealogy data={child} language={language} profiles={profiles} path={[...path, index]} onShowPhoto={onShowPhoto} onRequestCorrection={onRequestCorrection} expandedPaths={expandedPaths} highlightedPath={highlightedPath} />
+					<Genealogy data={child} language={language} profiles={profiles} path={[...path, index]} fatherName={data.name} onShowPhoto={onShowPhoto} onRequestCorrection={onRequestCorrection} expandedPaths={expandedPaths} highlightedPath={highlightedPath} />
 				</div>)}
 			</div>}
 		</div>

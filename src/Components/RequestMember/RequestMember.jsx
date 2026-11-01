@@ -3,6 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../Providers/AuthProviders';
 import { apiFetch, flattenParents, readTree } from '../../config/api';
 
+const readFileAsDataUrl = file => new Promise((resolve, reject) => {
+	const reader = new FileReader();
+	reader.onload = () => resolve(reader.result);
+	reader.onerror = () => reject(new Error('ছবি পড়া যায়নি।'));
+	reader.readAsDataURL(file);
+});
+
 const RequestMember = () => {
 	const { user } = useContext(AuthContext);
 	const navigate = useNavigate();
@@ -11,6 +18,8 @@ const RequestMember = () => {
 	const [parentBanglaPath, setParentBanglaPath] = useState('');
 	const [englishName, setEnglishName] = useState('');
 	const [banglaName, setBanglaName] = useState('');
+	const [imageFile, setImageFile] = useState(null);
+	const [photoPreview, setPhotoPreview] = useState('');
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState('');
@@ -29,15 +38,22 @@ const RequestMember = () => {
 		setError('');
 		setSuccess('');
 		try {
+			let photoURL = '';
+			if (imageFile) {
+				const image = await readFileAsDataUrl(imageFile);
+				photoURL = (await apiFetch(user, '/images/profile', { method: 'POST', body: JSON.stringify({ image }) })).photoURL;
+			}
 			await apiFetch(user, '/requests', {
 				method: 'POST',
 				body: JSON.stringify({
 					type: 'member_add', englishName: englishName.trim(), banglaName: banglaName.trim(),
-					parentEnglishPath: JSON.parse(parentEnglishPath), parentBanglaPath: JSON.parse(parentBanglaPath),
+					parentEnglishPath: JSON.parse(parentEnglishPath), parentBanglaPath: JSON.parse(parentBanglaPath), photoURL,
 				}),
 			});
 			setEnglishName('');
 			setBanglaName('');
+			setImageFile(null);
+			setPhotoPreview('');
 			setSuccess('আপনার request admin-এর কাছে পাঠানো হয়েছে। Approve হলে tree-তে দেখা যাবে।');
 		} catch (requestError) {
 			setError(requestError.message || 'Request পাঠানো যায়নি।');
@@ -62,6 +78,16 @@ const RequestMember = () => {
 						<label className="block"><span className="block mb-2">বাংলা tree-তে বাবা/মা</span>
 							<select required value={parentBanglaPath} onChange={event => setParentBanglaPath(event.target.value)} className="w-full bg-[#01001a] border border-teal-500 rounded-lg px-3 py-2"><option value="">বাবা/মা নির্বাচন করুন</option>{parents.bangla.map(parent => <option key={JSON.stringify(parent.path)} value={JSON.stringify(parent.path)}>{parent.label}</option>)}</select>
 						</label>
+						<label className="block"><span className="block mb-2">সদস্যের ছবি (ঐচ্ছিক, Imgbb-তে upload হবে)</span><input type="file" accept="image/png,image/jpeg,image/webp" onChange={event => {
+							const file = event.target.files?.[0];
+							if (!file) return;
+							if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 6 * 1024 * 1024) {
+								setError('PNG, JPG অথবা WebP ছবি ৬ MB-এর মধ্যে দিন।');
+								return;
+							}
+							setError(''); setImageFile(file); setPhotoPreview(URL.createObjectURL(file));
+						}} className="w-full border border-teal-500 rounded-lg px-3 py-2" /></label>
+						{photoPreview && <img src={photoPreview} alt="নতুন সদস্যের ছবির preview" className="w-24 h-24 rounded-full object-cover border border-teal-500" />}
 						{error && <p role="alert" className="text-rose-300">{error}</p>}
 						{success && <p role="status" className="text-teal-300">{success}</p>}
 						<div className="flex justify-end"><button disabled={saving} className="border border-teal-500 rounded-lg px-6 py-2 disabled:opacity-50">{saving ? 'Sending…' : 'Send request'}</button></div>

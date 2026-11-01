@@ -134,8 +134,9 @@ const ManageFamily = () => {
 					<div className="grid md:grid-cols-2 gap-5 mt-8">
 						{requests.length === 0 && <p className="text-center opacity-80 md:col-span-2">কোনো pending request নেই।</p>}
 						{requests.map(request => <article key={request._id} className="div-glow rounded-xl p-5">
-							<p className="text-sm opacity-70">{request.type === 'member_add' ? 'Member addition' : `Name correction (${request.language})`}</p>
+							<p className="text-sm opacity-70">{request.type === 'member_add' ? 'Member addition' : `${request.field === 'fathers_name' ? 'Father’s name correction' : 'Name correction'} (${request.language})`}</p>
 							<h2 className="text-xl mt-2">{request.type === 'member_add' ? `${request.englishName} / ${request.banglaName}` : `${request.expectedName} → ${request.proposedName}`}</h2>
+							{request.photoURL && <img src={request.photoURL} alt={`${request.englishName} profile preview`} className="mt-3 w-24 h-24 object-cover rounded-full border border-teal-500" />}
 							{request.type === 'member_add' ? <div className="mt-3 text-sm opacity-80">
 								<p>English parent: {nodeLabel(trees.english, request.parentEnglishPath)}</p>
 								<p>বাংলা parent: {nodeLabel(trees.bangla, request.parentBanglaPath)}</p>

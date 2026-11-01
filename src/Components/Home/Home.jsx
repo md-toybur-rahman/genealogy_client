@@ -32,6 +32,7 @@ const Home = () => {
 	const [treeError, setTreeError] = useState('');
 	const [selectedPhoto, setSelectedPhoto] = useState(null);
 	const [correction, setCorrection] = useState(null);
+	const [correctionField, setCorrectionField] = useState('name');
 	const [proposedName, setProposedName] = useState('');
 	const [correctionError, setCorrectionError] = useState('');
 	const [correctionSent, setCorrectionSent] = useState(false);
@@ -120,6 +121,7 @@ const Home = () => {
 
 	const openCorrection = request => {
 		setCorrection(request);
+		setCorrectionField('name');
 		setProposedName(request.currentName);
 		setCorrectionError('');
 		setCorrectionSent(false);
@@ -139,7 +141,9 @@ const Home = () => {
 		try {
 			await apiFetch(user, '/requests', {
 				method: 'POST',
-				body: JSON.stringify({ type: 'name_correction', language: correction.language, targetPath: correction.targetPath, proposedName: proposedName.trim() }),
+				body: JSON.stringify({ type: 'name_correction', language: correction.language,
+					targetPath: correctionField === 'fathers_name' ? correction.targetPath.slice(0, -1) : correction.targetPath,
+					field: correctionField, proposedName: proposedName.trim() }),
 			});
 			setCorrectionSent(true);
 		} catch (error) {
@@ -239,7 +243,8 @@ const Home = () => {
 				<form onSubmit={handleCorrectionSubmit} className="bg_dark div-glow rounded-xl p-6 max-w-lg w-full space-y-4">
 					<button type="button" className="block ml-auto text-2xl" onClick={() => setCorrection(null)} aria-label="Close">×</button>
 					<h2 id="correction-title" className="text-xl">নাম সংশোধনের request</h2>
-					<p>বর্তমান নাম: {correction.currentName}</p>
+					<label className="block">কোন নাম সংশোধন করবেন?<select value={correctionField} onChange={event => { setCorrectionField(event.target.value); setProposedName(event.target.value === 'fathers_name' ? correction.fatherName : correction.currentName); }} className="mt-2 w-full border border-teal-500 rounded-lg bg-[#01001a] px-3 py-2"><option value="name">এই সদস্যের নাম ({correction.currentName})</option><option value="fathers_name" disabled={!correction.targetPath.length}>এই সদস্যের বাবার নাম ({correction.fatherName || 'নেই'})</option></select></label>
+					<p>বর্তমান নাম: {correctionField === 'fathers_name' ? correction.fatherName : correction.currentName}</p>
 					<label className="block">সঠিক নাম<input required maxLength={120} value={proposedName} onChange={event => setProposedName(event.target.value)} className="mt-2 w-full border border-teal-500 rounded-lg bg-transparent px-3 py-2" /></label>
 					{correctionError && <p role="alert" className="text-rose-300">{correctionError}</p>}
 					{correctionSent ? <p role="status" className="text-teal-300">Request admin-এর কাছে পাঠানো হয়েছে।</p> : <button disabled={sendingCorrection} className="border border-teal-500 rounded-lg px-5 py-2 disabled:opacity-50">{sendingCorrection ? 'পাঠানো হচ্ছে…' : 'Request পাঠান'}</button>}
