@@ -12,6 +12,7 @@ import ManageFamily from "../Components/ManageFamily/ManageFamily";
 import AdminRoute from "./AdminRoute";
 import AuthRoute from "./AuthRoute";
 import RequestMember from "../Components/RequestMember/RequestMember";
+import FamilyPhotos from "../Components/FamilyPhotos/FamilyPhotos";
 
 
 const router = createBrowserRouter([
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
 			{
 				path: "/all_users",
 				element: <PrivateRoute><All_Members></All_Members></PrivateRoute>
+			},
+			{
+				path: "/family-photos",
+				element: <PrivateRoute><FamilyPhotos /></PrivateRoute>
 			},
 			{
 				path: "/request-member",

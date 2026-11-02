@@ -34,8 +34,9 @@ const Navbar = () => {
 				</div>}
 				{user && <nav className={`${menuOpen ? 'flex' : 'hidden'} md:flex absolute md:static top-full left-3 right-3 md:left-auto md:right-auto md:ml-auto flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-2 lg:gap-3 p-3 md:p-0 rounded-xl md:rounded-none border border-teal-500/60 md:border-0 bg_dark md:bg-transparent text-sm shadow-xl md:shadow-none`}>
 					<Link onClick={() => setMenuOpen(false)} to="/request-member" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Request member' : 'সদস্য যোগের আবেদন'}</Link>
-					<Link onClick={() => setMenuOpen(false)} to="/all_users" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Members' : 'সদস্যগণ'}</Link>
-					<Link onClick={() => setMenuOpen(false)} to="/comments" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Comments' : 'মন্তব্য'}</Link>
+					{profile?.user_type === 'admin' && <Link onClick={() => setMenuOpen(false)} to="/all_users" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Members' : 'সদস্যগণ'}</Link>}
+					<Link onClick={() => setMenuOpen(false)} to="/family-photos" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Family Photo' : 'পারিবারিক ছবি'}</Link>
+					{profile?.user_type === 'admin' && <Link onClick={() => setMenuOpen(false)} to="/comments" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Comments' : 'মন্তব্য'}</Link>}
 					{profile?.user_type === 'admin' && <Link onClick={() => setMenuOpen(false)} to="/admin" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">Admin</Link>}
 					<button type="button" onClick={() => setLan(!lan)} className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'বাংলা' : 'English'}</button>
 					{user && <div className="hidden md:flex items-center gap-2">
