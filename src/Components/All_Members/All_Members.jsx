@@ -16,7 +16,7 @@ const All_Members = () => {
 	}, [user]);
 
 	return (
-		<main className={`${lan ? 'bangla_font' : 'english_font'} bg_dark min-h-screen w-full px-5 md:px-10 pt-28 pb-12`}>
+			<main className={`${lan ? 'bangla_font' : 'english_font'} bg_dark min-h-screen w-full px-4 sm:px-5 md:px-10 pt-24 sm:pt-28 pb-10 sm:pb-12`}>
 			<h1 className="text-2xl lg:text-3xl text-center text-glow">{lan ? 'সদস্যগণ' : 'Family members'}</h1>
 			{loading && <p className="text-center mt-8">Loading…</p>}
 			{error && <p role="alert" className="text-center text-rose-300 mt-8">{error}</p>}

@@ -63,13 +63,13 @@ const RequestMember = () => {
 	};
 
 	return (
-		<main className="bg_dark min-h-screen px-5 pt-28 pb-12">
+		<main className="bg_dark min-h-screen px-4 sm:px-5 pt-24 sm:pt-28 pb-10 sm:pb-12">
 			<section className="max-w-3xl mx-auto">
 				<button type="button" onClick={() => navigate('/')} className="mb-6 border border-teal-500 rounded-lg px-4 py-2">← Family tree</button>
-				<h1 className="text-2xl md:text-3xl text-center text-glow">Request to add a family member</h1>
+				<h1 className="text-xl sm:text-2xl md:text-3xl text-center text-glow break-words">Request to add a family member</h1>
 				<p className="text-center opacity-80 mt-2">Admin approve করলে member দুই ভাষার tree-তে যোগ হবে।</p>
 				{loading ? <p className="text-center mt-10">Family tree লোড হচ্ছে…</p> : (
-					<form onSubmit={handleSubmit} className="mt-8 space-y-5 div-glow rounded-xl p-5 md:p-8">
+					<form onSubmit={handleSubmit} className="mt-6 sm:mt-8 space-y-5 div-glow rounded-xl p-4 sm:p-5 md:p-8">
 						<label className="block"><span className="block mb-2">English name</span><input required maxLength={120} value={englishName} onChange={event => setEnglishName(event.target.value)} className="w-full bg-transparent border border-teal-500 rounded-lg px-3 py-2" /></label>
 						<label className="block"><span className="block mb-2">বাংলা নাম</span><input required maxLength={120} value={banglaName} onChange={event => setBanglaName(event.target.value)} className="w-full bg-transparent border border-teal-500 rounded-lg px-3 py-2" /></label>
 						<label className="block"><span className="block mb-2">English tree-তে বাবা/মা</span>

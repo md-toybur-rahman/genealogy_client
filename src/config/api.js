@@ -1,5 +1,5 @@
-export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:2000').replace(/\/$/, '');
-// export const API_URL = (import.meta.env.VITE_API_URL || 'https://genealogy-server.onrender.com').replace(/\/$/, '');
+// export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:2000').replace(/\/$/, '');
+export const API_URL = (import.meta.env.VITE_API_URL || 'https://genealogy-server.onrender.com').replace(/\/$/, '');
 export async function apiFetch(user, path, options = {}) {
 	const send = async forceRefresh => fetch(`${API_URL}${path}`, {
 		...options,

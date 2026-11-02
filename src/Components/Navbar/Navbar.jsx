@@ -1,41 +1,60 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaRegUser, FaSortDown } from 'react-icons/fa';
+import { FaRegUser, FaSortDown, FaBars, FaTimes } from 'react-icons/fa';
 import { AuthContext } from '../../Providers/AuthProviders';
 
 const Navbar = () => {
 	const { user, profile, logOut, isProfile, setIsProfile, lan, setLan } = useContext(AuthContext);
 	const navigate = useNavigate();
+	const [menuOpen, setMenuOpen] = useState(false);
 	const handleLogout = async () => {
 		setIsProfile(false);
+		setMenuOpen(false);
 		await logOut();
 	};
 
 	return (
-		<header className="w-full fixed top-0 left-0 min-h-[76px] bg_dark div-glow flex flex-wrap items-center justify-between gap-3 px-4 md:px-8 py-3 z-50">
-			<Link to="/" className="flex items-center gap-2 shrink-0">
-				<img className="w-12 h-12" src="chomor_uddin_logo.png" alt="" />
-				<span className="text-glow english_font">Chomor Uddin<br />Hawladar</span>
-			</Link>
-			{user && <nav className="flex flex-wrap items-center justify-end gap-2 md:gap-3 text-sm">
-				<Link to="/request-member" className="border border-teal-500 rounded-lg px-3 py-2">{!lan ? 'Request member' : 'সদস্য যোগের আবেদন'}</Link>
-				<Link to="/all_users" className="border border-teal-500 rounded-lg px-3 py-2">{!lan ? 'Members' : 'সদস্যগণ'}</Link>
-				<Link to="/comments" className="border border-teal-500 rounded-lg px-3 py-2">{!lan ? 'Comments' : 'মন্তব্য'}</Link>
-				{profile?.user_type === 'admin' && <Link to="/admin" className="border border-teal-500 rounded-lg px-3 py-2">Admin</Link>}
-				<button type="button" onClick={() => setLan(!lan)} className="border border-teal-500 rounded-lg px-3 py-2">{!lan ? 'বাংলা' : 'English'}</button>
-				<button type="button" onClick={() => setIsProfile(!isProfile)} className="flex items-center gap-2" aria-expanded={isProfile} aria-label="Profile menu">
-					{profile?.photoURL ? <img className="w-10 h-10 rounded-full object-cover" src={profile.photoURL} alt="" /> : <span className="w-10 h-10 rounded-full div-glow flex items-center justify-center"><FaRegUser /></span>}
-					<FaSortDown className={`${isProfile ? 'rotate-180' : ''} duration-300`} />
-				</button>
-				{isProfile && <section className="absolute top-[72px] right-4 md:right-8 div-glow p-5 rounded-xl bg_dark w-72">
+		<header className="w-full fixed top-0 left-0 bg_dark div-glow px-3 sm:px-5 lg:px-8 py-2 sm:py-3 z-50">
+			<div className="max-w-screen-2xl mx-auto flex min-h-12 items-center justify-between gap-2">
+				<Link to="/" onClick={() => setMenuOpen(false)} className="flex min-w-0 items-center gap-2">
+					<img className="w-10 h-10 sm:w-12 sm:h-12 shrink-0" src="chomor_uddin_logo.png" alt="" />
+					{
+						!lan ?
+							<span className="text-glow english_font text-xs sm:text-sm leading-tight">Chomor Uddin<br />Hawladar</span> :
+							<span className="text-glow english_font text-xs sm:text-sm leading-tight">ছমর উদ্দিন<br />হাওলাদার</span>
+
+					}
+				</Link>
+				{user && <div className="flex md:hidden items-center gap-2">
+					<button type="button" onClick={() => setIsProfile(!isProfile)} className="flex items-center gap-1.5" aria-expanded={isProfile} aria-label="Profile menu">
+						{profile?.photoURL ? <img className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover" src={profile.photoURL} alt="" /> : <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-full div-glow flex items-center justify-center"><FaRegUser /></span>}
+						<FaSortDown className={`${isProfile ? 'rotate-180' : ''} duration-300`} />
+					</button>
+					<button type="button" onClick={() => setMenuOpen(open => !open)} className="md:hidden w-10 h-10 flex items-center justify-center border border-teal-500 rounded-lg" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen}>{menuOpen ? <FaTimes /> : <FaBars />}</button>
+				</div>}
+				{user && <nav className={`${menuOpen ? 'flex' : 'hidden'} md:flex absolute md:static top-full left-3 right-3 md:left-auto md:right-auto md:ml-auto flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-2 lg:gap-3 p-3 md:p-0 rounded-xl md:rounded-none border border-teal-500/60 md:border-0 bg_dark md:bg-transparent text-sm shadow-xl md:shadow-none`}>
+					<Link onClick={() => setMenuOpen(false)} to="/request-member" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Request member' : 'সদস্য যোগের আবেদন'}</Link>
+					<Link onClick={() => setMenuOpen(false)} to="/all_users" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Members' : 'সদস্যগণ'}</Link>
+					<Link onClick={() => setMenuOpen(false)} to="/comments" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Comments' : 'মন্তব্য'}</Link>
+					{profile?.user_type === 'admin' && <Link onClick={() => setMenuOpen(false)} to="/admin" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">Admin</Link>}
+					<button type="button" onClick={() => setLan(!lan)} className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'বাংলা' : 'English'}</button>
+					{user && <div className="hidden md:flex items-center gap-2">
+						<button type="button" onClick={() => setIsProfile(!isProfile)} className="flex items-center gap-1.5" aria-expanded={isProfile} aria-label="Profile menu">
+							{profile?.photoURL ? <img className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover" src={profile.photoURL} alt="" /> : <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-full div-glow flex items-center justify-center"><FaRegUser /></span>}
+							<FaSortDown className={`${isProfile ? 'rotate-180' : ''} duration-300`} />
+						</button>
+						<button type="button" onClick={() => setMenuOpen(open => !open)} className="md:hidden w-10 h-10 flex items-center justify-center border border-teal-500 rounded-lg" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen}>{menuOpen ? <FaTimes /> : <FaBars />}</button>
+					</div>}
+				</nav>}
+				{user && isProfile && <section className="absolute top-full right-2 sm:right-4 md:right-8 mt-2 div-glow p-4 sm:p-5 rounded-xl bg_dark w-[min(20rem,calc(100vw-1rem))] max-h-[75dvh] overflow-y-auto">
 					<p className="text-xs text-teal-300 break-all">{user.email}</p>
-					<p className="mt-3">{profile?.name} · {profile?.bangla_name}</p>
-					<p className="mt-1">Father&apos;s name: {profile?.fathers_name}</p>
-					<p className="mt-1">Mobile: {profile?.phone_number} ({profile?.phone_visibility})</p>
-					<button onClick={() => { setIsProfile(false); navigate('/edit_profile'); }} className="border border-teal-500 rounded-lg px-4 py-2 mt-4 w-full">Edit profile</button>
-					<button onClick={handleLogout} className="border border-teal-500 rounded-lg px-4 py-2 mt-2 w-full">Log out</button>
+					<p className="mt-3 break-words">{profile?.name} · {profile?.bangla_name}</p>
+					<p className="mt-1 break-words">Father&apos;s name: {profile?.fathers_name}</p>
+					<p className="mt-1 break-words">Mobile: {profile?.phone_number} ({profile?.phone_visibility})</p>
+					<button onClick={() => { setIsProfile(false); navigate('/edit_profile'); }} className="border border-teal-500 rounded-lg px-4 py-2 mt-4 w-full min-h-11">Edit profile</button>
+					<button onClick={handleLogout} className="border border-teal-500 rounded-lg px-4 py-2 mt-2 w-full min-h-11">Log out</button>
 				</section>}
-			</nav>}
+			</div>
 		</header>
 	);
 };

@@ -100,9 +100,9 @@ const EditProfile = () => {
 	if (profileLoading) return <div className="bg_dark min-h-screen flex items-center justify-center">Profile লোড হচ্ছে…</div>;
 
 	return (
-		<main className="bg_dark min-h-screen px-5 pt-24 pb-12 flex justify-center">
-			<section className="border border-teal-500 shadow-md shadow-teal-500 rounded-2xl p-6 w-full max-w-xl h-fit">
-				<h1 className="text-2xl md:text-3xl font-bold text-center">{profile?.profile_complete ? 'Edit your profile' : 'Complete your profile'}</h1>
+		<main className="bg_dark min-h-screen px-4 sm:px-5 pt-24 pb-10 sm:pb-12 flex justify-center">
+			<section className="border border-teal-500 shadow-md shadow-teal-500 rounded-2xl p-4 sm:p-6 w-full max-w-xl h-fit">
+				<h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words">{profile?.profile_complete ? 'Edit your profile' : 'Complete your profile'}</h1>
 				<p className="text-center opacity-80 mt-2">সিস্টেম ব্যবহার করতে নিজের তথ্যগুলো পূরণ করুন।</p>
 				{profileError && <p role="alert" className="text-rose-300 mt-4">{profileError}</p>}
 				<form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">

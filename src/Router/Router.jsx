@@ -39,17 +39,17 @@ const router = createBrowserRouter([
 			{
 				path: "/admin",
 				element: <AdminRoute><ManageFamily /></AdminRoute>
+			},
+			{
+				path: '/signup',
+				element: <SignUp />
+			},
+			{
+				path: '/edit_profile',
+				element: <AuthRoute><EditProfile /></AuthRoute>
 			}
 		]
-	},
-	{
-		path: '/signup',
-		element: <SignUp></SignUp>
-	},
-	{
-		path: '/edit_profile',
-		element: <AuthRoute><EditProfile /></AuthRoute>
-	},
+	}
 
 ]);
 

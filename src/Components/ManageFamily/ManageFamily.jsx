@@ -111,19 +111,19 @@ const ManageFamily = () => {
 	};
 
 	return (
-		<main className="bg_dark min-h-screen px-5 pt-28 pb-12">
+		<main className="bg_dark min-h-screen px-4 sm:px-5 pt-24 sm:pt-28 pb-10 sm:pb-12">
 			<section className="max-w-6xl mx-auto">
 				<h1 className="text-2xl md:text-3xl text-center text-glow">Admin dashboard</h1>
 				<p className="text-center opacity-80 mt-2">Signed in as {profile?.name}</p>
-				<div className="flex justify-center gap-3 mt-8">
-					<button onClick={() => setTab('requests')} className={`border border-teal-500 rounded-lg px-4 py-2 ${tab === 'requests' ? 'bg-teal-500/20' : ''}`}>Requests ({requests.length})</button>
-					<button onClick={() => setTab('users')} className={`border border-teal-500 rounded-lg px-4 py-2 ${tab === 'users' ? 'bg-teal-500/20' : ''}`}>Users & roles</button>
-					{canDeleteMembers && <button onClick={() => setTab('delete')} className={`border border-rose-400 rounded-lg px-4 py-2 ${tab === 'delete' ? 'bg-rose-500/20' : ''}`}>Delete family member</button>}
-					<button onClick={loadData} className="border border-teal-500 rounded-lg px-4 py-2">Refresh</button>
+				<div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-6 sm:mt-8">
+					<button onClick={() => setTab('requests')} className={`border border-teal-500 rounded-lg px-3 sm:px-4 py-2 min-h-10 ${tab === 'requests' ? 'bg-teal-500/20' : ''}`}>Requests ({requests.length})</button>
+					<button onClick={() => setTab('users')} className={`border border-teal-500 rounded-lg px-3 sm:px-4 py-2 min-h-10 ${tab === 'users' ? 'bg-teal-500/20' : ''}`}>Users & roles</button>
+					{canDeleteMembers && <button onClick={() => setTab('delete')} className={`border border-rose-400 rounded-lg px-3 sm:px-4 py-2 min-h-10 ${tab === 'delete' ? 'bg-rose-500/20' : ''}`}>Delete family member</button>}
+					<button onClick={loadData} className="border border-teal-500 rounded-lg px-3 sm:px-4 py-2 min-h-10">Refresh</button>
 				</div>
 				{error && <p role="alert" className="text-rose-300 text-center mt-5">{error}</p>}
 				{loading ? <p className="text-center mt-10">Loading…</p> : tab === 'delete' && canDeleteMembers ? (
-					<form onSubmit={deleteMember} className="div-glow rounded-xl p-6 max-w-2xl mx-auto mt-8 space-y-5">
+					<form onSubmit={deleteMember} className="div-glow rounded-xl p-4 sm:p-6 max-w-2xl mx-auto mt-6 sm:mt-8 space-y-5">
 						<h2 className="text-xl">ভুল করে tree-তে যোগ হওয়া member মুছুন</h2>
 						<p className="text-sm opacity-80">English ও বাংলা tree-তে একই ব্যক্তির সঠিক অবস্থান বেছে নিন। নির্বাচিত member-এর নিচের branch-ও মুছে যাবে। এই কাজ undo করা যাবে না।</p>
 						<label className="block">English tree<select required value={englishMember} onChange={event => setEnglishMember(event.target.value)} className="mt-2 w-full border border-teal-500 bg-slate-900 rounded-lg px-3 py-3"><option value="">Member নির্বাচন করুন</option>{englishMembers.map(person => <option key={person.path.join('.')} value={JSON.stringify(person.path)}>{person.label}</option>)}</select></label>
@@ -134,8 +134,8 @@ const ManageFamily = () => {
 					<div className="grid md:grid-cols-2 gap-5 mt-8">
 						{requests.length === 0 && <p className="text-center opacity-80 md:col-span-2">কোনো pending request নেই।</p>}
 						{requests.map(request => <article key={request._id} className="div-glow rounded-xl p-5">
-							<p className="text-sm opacity-70">{request.type === 'member_add' ? 'Member addition' : `${request.field === 'fathers_name' ? 'Father’s name correction' : 'Name correction'} (${request.language})`}</p>
-							<h2 className="text-xl mt-2">{request.type === 'member_add' ? `${request.englishName} / ${request.banglaName}` : `${request.expectedName} → ${request.proposedName}`}</h2>
+							<p className="text-sm opacity-70">{request.type === 'member_add' ? 'Member addition' : request.type === 'photo_add' ? `Photo upload request (${request.language})` : `${request.field === 'fathers_name' ? 'Father’s name correction' : 'Name correction'} (${request.language})`}</p>
+							<h2 className="text-xl mt-2">{request.type === 'member_add' ? `${request.englishName} / ${request.banglaName}` : request.type === 'photo_add' ? `${request.expectedName} — ছবি যুক্ত করার অনুরোধ` : `${request.expectedName} → ${request.proposedName}`}</h2>
 							{request.photoURL && <img src={request.photoURL} alt={`${request.englishName} profile preview`} className="mt-3 w-24 h-24 object-cover rounded-full border border-teal-500" />}
 							{request.type === 'member_add' ? <div className="mt-3 text-sm opacity-80">
 								<p>English parent: {nodeLabel(trees.english, request.parentEnglishPath)}</p>

@@ -15,7 +15,7 @@ const AuthProviders = ({ children }) => {
 	const [userDetectedLoading, setUserDetectedLoading] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [isProfile, setIsProfile] = useState(false);
-	const [lan, setLan] = useState(false);
+	const [lan, setLan] = useState(true);
 	const [profile, setProfile] = useState(null);
 	const [profileLoading, setProfileLoading] = useState(true);
 	const [profileError, setProfileError] = useState('');
