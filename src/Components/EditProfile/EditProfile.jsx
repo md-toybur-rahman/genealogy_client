@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const EditProfile = () => {
 	const { user, profile, profileLoading, profileError, refreshProfile } = useContext(AuthContext);
 	const navigate = useNavigate();
-	const [form, setForm] = useState({ name: '', fathers_name: '', phone_number: '' });
+	const [form, setForm] = useState({ name: '', fathers_name: '', phone_number: '', phone_visibility: 'private' });
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState('');
 
@@ -16,6 +16,7 @@ const EditProfile = () => {
 			name: profile.profile_complete ? (profile.name || profile.bangla_name || '') : '',
 			fathers_name: profile.profile_complete ? (profile.fathers_name || '') : '',
 			phone_number: profile.profile_complete ? (profile.phone_number || '') : '',
+			phone_visibility: profile.phone_visibility || 'private',
 		});
 	}, [profile]);
 
@@ -28,7 +29,7 @@ const EditProfile = () => {
 		try {
 			await apiFetch(user, '/users/me', {
 				method: 'PUT',
-				body: JSON.stringify({ name: form.name.trim(), fathers_name: form.fathers_name.trim(), phone_number: form.phone_number.trim() }),
+				body: JSON.stringify({ name: form.name.trim(), fathers_name: form.fathers_name.trim(), phone_number: form.phone_number.trim(), phone_visibility: form.phone_visibility }),
 			});
 			await refreshProfile();
 			navigate('/');
@@ -51,6 +52,12 @@ const EditProfile = () => {
 					<label className="flex flex-col gap-2">আপনার নাম<input required maxLength={120} name="name" value={form.name} onChange={updateField} className="border border-teal-500 bg-transparent rounded-md px-3 py-3" /></label>
 					<label className="flex flex-col gap-2">বাবার নাম<input required maxLength={120} name="fathers_name" value={form.fathers_name} onChange={updateField} className="border border-teal-500 bg-transparent rounded-md px-3 py-3" /></label>
 					<label className="flex flex-col gap-2">মোবাইল নম্বর<input required maxLength={30} name="phone_number" value={form.phone_number} onChange={updateField} className="border border-teal-500 bg-transparent rounded-md px-3 py-3" /></label>
+					<label className="flex flex-col gap-2">মোবাইল নম্বর কে দেখতে পারবে?
+						<select required name="phone_visibility" value={form.phone_visibility} onChange={updateField} className="border border-teal-500 bg-[#01001a] rounded-md px-3 py-3">
+							<option value="private">Private — শুধু আমি ও admin</option>
+							<option value="public">Public — সকল signed-in user</option>
+						</select>
+					</label>
 					{error && <p role="alert" className="text-rose-300">{error}</p>}
 					<div className="flex justify-end gap-3">
 						{profile?.profile_complete && <button type="button" onClick={() => navigate('/')} className="border border-teal-500 rounded-lg px-5 py-2 min-h-11">বাতিল</button>}

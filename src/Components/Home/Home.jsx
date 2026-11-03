@@ -187,7 +187,7 @@ const Home = () => {
 						}
 
 						<div className="fixed top-20 sm:top-28 z-10 w-full max-w-xl min-w-0 px-4 mb-4">
-							<Link onClick={() => setMenuOpen(false)} to="/family-photos" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2 flex md:hidden items-center justify-center text-center mb-2">{!lan ? 'Family Photo' : 'পারিবারের সকলের ছবি'}</Link>
+							<Link onClick={() => setMenuOpen(false)} to="/family-photos" className="bg-slate-950/90  border border-teal-500 rounded-lg px-3 py-2.5 md:py-2 flex md:hidden items-center justify-center text-center mb-2">{!lan ? 'Family Photo' : 'পারিবারের সকলের ছবি'}</Link>
 							<label htmlFor="genealogy-search" className="sr-only">নাম দিয়ে family tree খুঁজুন</label>
 							<div className="flex items-center gap-2 border border-teal-500 rounded-xl px-4 py-3 bg-slate-950/90 shadow-lg shadow-teal-900/30">
 								<input id="genealogy-search" type="search" autoComplete="off" value={treeSearch} onChange={event => { setTreeSearch(event.target.value); setSelectedTreePath(null); setExpandedPaths([]); }} placeholder={lan ? 'সদস্যের নাম লিখে খুঁজুন…' : 'Search family tree by name…'} className="w-full bg-transparent outline-none" />

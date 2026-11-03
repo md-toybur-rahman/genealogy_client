@@ -48,7 +48,7 @@ const SignUp = () => {
 		<main className="bg_dark min-h-screen w-full flex flex-col items-center justify-center px-4 py-8">
 			<h1 className="text-center text-lg sm:text-xl md:text-2xl text-glow max-w-lg break-words">ছমর উদ্দিনের পরিবারে আপনাকে স্বাগতম</h1>
 			<h1 className="text-center text-base sm:text-lg md:text-xl text-glow text-red-400 max-w-lg break-words mt-5">পুরো সিস্টেম বুজতে আগে নিচের এই ভিডিওটি দেখে নিন</h1>
-			<a href='https://youtu.be/ugQ7H-xEVSU' className="border-2 border-teal-500 px-5 py-3 min-h-12 rounded-lg disabled:opacity-50 w-full sm:w-auto mt-4">
+			<a href='https://youtu.be/ugQ7H-xEVSU' className="border-2 border-teal-500 px-5 py-3 min-h-12 rounded-lg disabled:opacity-50 w-full sm:w-auto mt-4 text-center">
 					ভিডিও দেখার জন্য এইখানে চাপ দিন
 				</a>
 			<section className="border border-teal-500 p-4 sm:p-6 shadow-md shadow-teal-500 rounded-2xl mt-8 sm:mt-10 w-full max-w-sm min-h-48 flex flex-col items-center justify-center gap-5">

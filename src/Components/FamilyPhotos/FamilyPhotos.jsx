@@ -5,11 +5,11 @@ import { apiFetch, readTree } from '../../config/api';
 
 function flattenFamily(root, profiles) {
 	const members = [];
-	function visit(node) {
+	function visit(node, fatherName = '') {
 		if (!node) return;
 		const profile = profiles.find(person => person.family_member_id && person.family_member_id === node.familyMemberId);
-		members.push({ name: node.name, photoURL: profile?.photoURL || node.photoURL || '' });
-		(node.children || []).forEach(visit);
+		members.push({ name: node.name, fatherName, photoURL: profile?.photoURL || node.photoURL || '' });
+		(node.children || []).forEach(child => visit(child, node.name));
 	}
 	visit(root);
 	return members.sort((first, second) => Number(Boolean(second.photoURL)) - Number(Boolean(first.photoURL)));
@@ -49,7 +49,10 @@ const FamilyPhotos = () => {
 						<div className="aspect-square w-full bg-slate-900/70 flex items-center justify-center overflow-hidden">
 							{member.photoURL ? <img src={member.photoURL} alt={member.name} loading="lazy" className="w-full h-full object-cover" /> : <div className="flex flex-col items-center gap-2 px-2 text-center text-teal-200/60"><FaRegImage className="text-3xl" /><span className="text-xs sm:text-sm">{lan ? 'ছবি নেই' : 'No photo'}</span></div>}
 						</div>
-						<h2 className="px-2.5 sm:px-3 py-2.5 sm:py-3 text-center text-sm sm:text-base font-medium leading-snug break-words">{member.name}</h2>
+						<div className="px-2.5 sm:px-3 py-2.5 sm:py-3 text-center">
+							<h2 className="text-sm sm:text-base font-medium leading-snug break-words">{member.name}</h2>
+							<p className="mt-1 text-xs sm:text-sm leading-snug opacity-75 break-words">{lan ? `বাবার নাম: ${member.fatherName || 'উল্লেখ নেই'}` : `Father: ${member.fatherName || 'Not listed'}`}</p>
+						</div>
 					</article>)}
 				</div>}
 			</section>
