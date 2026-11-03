@@ -40,6 +40,9 @@ const Navbar = () => {
 					{profile?.user_type === 'admin' && <Link onClick={() => setMenuOpen(false)} to="/admin" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">Admin</Link>}
 					<button type="button" onClick={() => setLan(!lan)} className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'বাংলা' : 'English'}</button>
 					<a href='https://youtu.be/ugQ7H-xEVSU' to="/family-photos" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Tutorial' : 'টিউটোরিয়াল'}</a>
+					<div role="note" className="sm:hidden w-full rounded-xl border border-teal-500/60 bg-slate-950/80 px-4 py-3 text-center text-sm sm:text-base leading-relaxed">
+						{lan ? 'আপনার ছবি যুক্ত না থাকলে নিজের নামের পাশের ছবি আইকনে চাপ দিয়ে ছবি যুক্তির আবেদন করুন। অন্য কোনো সদস্যের ছবি আপনার কাছে থাকলে তাঁর নামের পাশের আইকন থেকেও ছবি পাঠাতে পারেন। Admin অনুমোদন করলে ছবিটি tree-তে যুক্ত বা পরিবর্তন হবে।' : 'If your photo is missing, use the image icon beside your name to request an upload. If you have a photo of another member, you can submit it from the icon beside their name too. The photo appears in the tree after admin approval.'}
+					</div>
 					{user && <div className="hidden md:flex items-center gap-2">
 						<button type="button" onClick={() => setIsProfile(!isProfile)} className="flex items-center gap-1.5" aria-expanded={isProfile} aria-label="Profile menu">
 							{profile?.photoURL ? <img className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover" src={profile.photoURL} alt="" /> : <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-full div-glow flex items-center justify-center"><FaRegUser /></span>}

@@ -34,6 +34,8 @@ const ManageFamily = () => {
 	const [loading, setLoading] = useState(true);
 	const [busyId, setBusyId] = useState('');
 	const [error, setError] = useState('');
+	const [notice, setNotice] = useState('');
+	const [bulkApproving, setBulkApproving] = useState(false);
 	const [englishMember, setEnglishMember] = useState('');
 	const [banglaMember, setBanglaMember] = useState('');
 	const [deleting, setDeleting] = useState(false);
@@ -71,6 +73,33 @@ const ManageFamily = () => {
 			await loadData();
 		} finally {
 			setBusyId('');
+		}
+	};
+
+	const approveAllRequests = async () => {
+		const pendingRequests = [...requests];
+		if (!pendingRequests.length || !window.confirm(`${pendingRequests.length}টি pending request approve করবেন? কোনো request-এ সমস্যা হলে সেটি pending থাকবে, বাকিগুলো approve হবে।`)) return;
+		setBulkApproving(true);
+		setError('');
+		setNotice('');
+		let approvedCount = 0;
+		const failedRequests = [];
+		try {
+			for (const request of pendingRequests) {
+				try {
+					await apiFetch(user, `/admin/requests/${request._id}`, { method: 'PATCH', body: JSON.stringify({ decision: 'approved' }) });
+					approvedCount += 1;
+				} catch (approveError) {
+					failedRequests.push({ name: request.expectedName || request.englishName || 'Request', message: approveError.message || 'Approve করা যায়নি।' });
+				}
+			}
+			await loadData();
+			setNotice(`${approvedCount}টি request approve হয়েছে।`);
+			if (failedRequests.length) setError(`${failedRequests.length}টি request pending আছে: ${failedRequests.map(item => `${item.name} — ${item.message}`).join(' | ')}`);
+		} catch (loadError) {
+			setError(loadError.message || 'Request list refresh করা যায়নি।');
+		} finally {
+			setBulkApproving(false);
 		}
 	};
 
@@ -119,9 +148,10 @@ const ManageFamily = () => {
 					<button onClick={() => setTab('requests')} className={`border border-teal-500 rounded-lg px-3 sm:px-4 py-2 min-h-10 ${tab === 'requests' ? 'bg-teal-500/20' : ''}`}>Requests ({requests.length})</button>
 					<button onClick={() => setTab('users')} className={`border border-teal-500 rounded-lg px-3 sm:px-4 py-2 min-h-10 ${tab === 'users' ? 'bg-teal-500/20' : ''}`}>Users & roles</button>
 					{canDeleteMembers && <button onClick={() => setTab('delete')} className={`border border-rose-400 rounded-lg px-3 sm:px-4 py-2 min-h-10 ${tab === 'delete' ? 'bg-rose-500/20' : ''}`}>Delete family member</button>}
-					<button onClick={loadData} className="border border-teal-500 rounded-lg px-3 sm:px-4 py-2 min-h-10">Refresh</button>
+					<button disabled={bulkApproving} onClick={loadData} className="border border-teal-500 rounded-lg px-3 sm:px-4 py-2 min-h-10 disabled:opacity-50">Refresh</button>
 				</div>
 				{error && <p role="alert" className="text-rose-300 text-center mt-5">{error}</p>}
+				{notice && <p role="status" className="text-teal-200 text-center mt-4">{notice}</p>}
 				{loading ? <p className="text-center mt-10">Loading…</p> : tab === 'delete' && canDeleteMembers ? (
 					<form onSubmit={deleteMember} className="div-glow rounded-xl p-4 sm:p-6 max-w-2xl mx-auto mt-6 sm:mt-8 space-y-5">
 						<h2 className="text-xl">ভুল করে tree-তে যোগ হওয়া member মুছুন</h2>
@@ -131,7 +161,11 @@ const ManageFamily = () => {
 						<button disabled={deleting || !englishMembers.length || !banglaMembers.length} className="border border-rose-400 text-rose-200 rounded-lg px-5 py-2 disabled:opacity-50">{deleting ? 'মুছছে…' : 'দুই tree থেকে member delete করুন'}</button>
 					</form>
 				) : tab === 'requests' ? (
-					<div className="grid md:grid-cols-2 gap-5 mt-8">
+					<>
+						<div className="flex justify-end mt-6">
+							<button type="button" disabled={!requests.length || bulkApproving || Boolean(busyId)} onClick={approveAllRequests} className="min-h-11 w-full sm:w-auto border border-teal-500 rounded-lg px-5 py-2 disabled:opacity-50">{bulkApproving ? 'সব request approve হচ্ছে…' : `সবগুলো approve করুন (${requests.length})`}</button>
+						</div>
+						<div className="grid md:grid-cols-2 gap-5 mt-5">
 						{requests.length === 0 && <p className="text-center opacity-80 md:col-span-2">কোনো pending request নেই।</p>}
 						{requests.map(request => <article key={request._id} className="div-glow rounded-xl p-5">
 							<p className="text-sm opacity-70">{request.type === 'member_add' ? 'Member addition' : request.type === 'photo_add' ? `Photo upload request (${request.language})` : request.type === 'photo_change' ? `Photo change request (${request.language})` : `${request.field === 'fathers_name' ? 'Father’s name correction' : 'Name correction'} (${request.language})`}</p>
@@ -144,11 +178,12 @@ const ManageFamily = () => {
 							</div> : <p className="mt-3 text-sm opacity-80">Tree: {request.language === 'english' ? 'English' : 'বাংলা'} · {nodeLabel(trees[request.language], request.targetPath)}</p>}
 							<p className="mt-3 text-sm">Request করেছেন: {request.submitterName} · {new Date(request.createdAt).toLocaleString()}</p>
 							<div className="flex gap-3 justify-end mt-5">
-								<button disabled={busyId === request._id} onClick={() => reviewRequest(request._id, 'rejected')} className="border border-rose-400 rounded-lg px-4 py-2 disabled:opacity-50">Reject</button>
-								<button disabled={busyId === request._id} onClick={() => reviewRequest(request._id, 'approved')} className="border border-teal-500 rounded-lg px-4 py-2 disabled:opacity-50">{busyId === request._id ? 'Saving…' : 'Approve'}</button>
+								<button disabled={bulkApproving || busyId === request._id} onClick={() => reviewRequest(request._id, 'rejected')} className="border border-rose-400 rounded-lg px-4 py-2 disabled:opacity-50">Reject</button>
+								<button disabled={bulkApproving || busyId === request._id} onClick={() => reviewRequest(request._id, 'approved')} className="border border-teal-500 rounded-lg px-4 py-2 disabled:opacity-50">{busyId === request._id ? 'Saving…' : 'Approve'}</button>
 							</div>
 						</article>)}
-					</div>
+						</div>
+					</>
 				) : (
 					<div className="overflow-x-auto mt-8">
 						<table className="w-full min-w-[700px] border-collapse">

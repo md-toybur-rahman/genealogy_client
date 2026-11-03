@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Genealogy from '../Genealogy/Genealogy';
 import { MdComment } from "react-icons/md";
 import { DNA } from 'react-loader-spinner';
@@ -186,7 +186,8 @@ const Home = () => {
 
 						}
 
-						<div className="fixed top-28 z-10 w-full max-w-xl min-w-0 px-4 mb-4">
+						<div className="fixed top-20 sm:top-28 z-10 w-full max-w-xl min-w-0 px-4 mb-4">
+							<Link onClick={() => setMenuOpen(false)} to="/family-photos" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2 flex md:hidden items-center justify-center text-center mb-2">{!lan ? 'Family Photo' : 'পারিবারের সকলের ছবি'}</Link>
 							<label htmlFor="genealogy-search" className="sr-only">নাম দিয়ে family tree খুঁজুন</label>
 							<div className="flex items-center gap-2 border border-teal-500 rounded-xl px-4 py-3 bg-slate-950/90 shadow-lg shadow-teal-900/30">
 								<input id="genealogy-search" type="search" autoComplete="off" value={treeSearch} onChange={event => { setTreeSearch(event.target.value); setSelectedTreePath(null); setExpandedPaths([]); }} placeholder={lan ? 'সদস্যের নাম লিখে খুঁজুন…' : 'Search family tree by name…'} className="w-full bg-transparent outline-none" />
@@ -199,7 +200,10 @@ const Home = () => {
 							</div>}
 						</div>
 
-						<div className='flex flex-col items-center gap-5 mt-12 md:mt-20'>
+						<div className='flex flex-col items-center gap-5 mt-28 md:mt-24'>
+							{/* <div role="note" className="w-[calc(100%-2rem)] max-w-5xl rounded-xl border border-teal-500/60 bg-slate-950/80 px-4 py-3 text-center text-sm sm:text-base leading-relaxed">
+								{lan ? 'আপনার ছবি যুক্ত না থাকলে নিজের নামের পাশের ছবি আইকনে চাপ দিয়ে ছবি যুক্তির আবেদন করুন। অন্য কোনো সদস্যের ছবি আপনার কাছে থাকলে তাঁর নামের পাশের আইকন থেকেও ছবি পাঠাতে পারেন। Admin অনুমোদন করলে ছবিটি tree-তে যুক্ত বা পরিবর্তন হবে।' : 'If your photo is missing, use the image icon beside your name to request an upload. If you have a photo of another member, you can submit it from the icon beside their name too. The photo appears in the tree after admin approval.'}
+							</div> */}
 							{
 								(loading || userDetectedLoading) ?
 									<div className='flex flex-col items-center'>
