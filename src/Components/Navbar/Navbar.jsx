@@ -39,6 +39,7 @@ const Navbar = () => {
 					{profile?.user_type === 'admin' && <Link onClick={() => setMenuOpen(false)} to="/comments" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Comments' : 'মন্তব্য'}</Link>}
 					{profile?.user_type === 'admin' && <Link onClick={() => setMenuOpen(false)} to="/admin" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">Admin</Link>}
 					<button type="button" onClick={() => setLan(!lan)} className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'বাংলা' : 'English'}</button>
+					<a href='https://youtu.be/ugQ7H-xEVSU' to="/family-photos" className="border border-teal-500 rounded-lg px-3 py-2.5 md:py-2">{!lan ? 'Tutorial' : 'টিউটোরিয়াল'}</a>
 					{user && <div className="hidden md:flex items-center gap-2">
 						<button type="button" onClick={() => setIsProfile(!isProfile)} className="flex items-center gap-1.5" aria-expanded={isProfile} aria-label="Profile menu">
 							{profile?.photoURL ? <img className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover" src={profile.photoURL} alt="" /> : <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-full div-glow flex items-center justify-center"><FaRegUser /></span>}

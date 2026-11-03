@@ -41,6 +41,7 @@ const FamilyPhotos = () => {
 			<section className="max-w-7xl mx-auto">
 				<h1 className="text-2xl sm:text-3xl text-center text-glow">{lan ? 'পারিবারিক ছবি' : 'Family Photo'}</h1>
 				<p className="text-center opacity-75 mt-2">{lan ? 'ছমর উদ্দিন থেকে শুরু করে পরিবারের সকল সদস্য' : 'Every family member, starting from Chomor Uddin'}</p>
+				{!loading && !error && <p className="text-center text-teal-200 mt-3">{lan ? `পরিবারের মোট সদস্য: ${members.length} জন` : `Total family members: ${members.length}`}</p>}
 				{loading && <p className="text-center mt-10">{lan ? 'ছবি load হচ্ছে…' : 'Loading photos…'}</p>}
 				{error && <p role="alert" className="text-center text-rose-300 mt-8 break-words">{error}</p>}
 				{!loading && !error && <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-5 mt-7 sm:mt-10">

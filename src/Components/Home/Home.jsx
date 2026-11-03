@@ -13,6 +13,7 @@ const readFileAsDataUrl = file => new Promise((resolve, reject) => {
 	reader.readAsDataURL(file);
 });
 import { FaWhatsapp } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 
 const normalizeSearch = value => value?.trim().toLocaleLowerCase();
 
@@ -114,11 +115,19 @@ const Home = () => {
 			const { photoURL } = await apiFetch(user, '/images/profile', { method: 'POST', body: JSON.stringify({ image }) });
 			await apiFetch(user, '/requests', {
 				method: 'POST', body: JSON.stringify({
-					type: 'photo_add', language: photoRequest.language, targetPath: photoRequest.targetPath,
-					familyMemberId: photoRequest.familyMemberId, photoURL,
+					type: photoRequest.type || 'photo_add', language: photoRequest.language, targetPath: photoRequest.targetPath,
+					familyMemberId: photoRequest.familyMemberId, photoURL, expectedPhotoURL: photoRequest.expectedPhotoURL || '',
 				})
 			});
 			setPhotoRequestSent(true);
+			Swal.fire({
+				position: "center",
+				icon: "success",
+				title: "Request admin-এর কাছে পাঠানো হয়েছে।",
+				theme: 'dark',
+				showConfirmButton: false,
+				timer: 1500
+			});
 		} catch (error) {
 			setPhotoRequestError(error.message || 'ছবির request পাঠানো যায়নি।');
 		} finally {
@@ -147,6 +156,15 @@ const Home = () => {
 				}),
 			});
 			setCorrectionSent(true);
+			setCorrection(null);
+			Swal.fire({
+				position: "center",
+				icon: "success",
+				title: "Request admin-এর কাছে পাঠানো হয়েছে।",
+				theme: 'dark',
+				showConfirmButton: false,
+				timer: 1500
+			});
 		} catch (error) {
 			setCorrectionError(error.message || 'Request পাঠানো যায়নি।');
 		} finally {
@@ -164,7 +182,7 @@ const Home = () => {
 						{
 							lan ?
 								<h1 className={`text-xs md:text-base cursor-pointer bg-transparent text-glow w-full md:w-fit p-4 rounded-md shadow-lg ${user ? 'fixed' : 'hidden'} bottom-3 left-4 lg:bottom-3 lg:right-20 bg_dark`}>পরিচালক: তৌয়বুর রহমান তুহিন <br />পিতার নাম: মোঃ আলী হোসেন <br /> মোবাইল নং: ০১৭৭৩৩৪৫১৮৯ <br /> <a href="https://wa.me/8801773345189" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 w-fit text-teal-200 hover:text-white"><FaWhatsapp aria-hidden="true" /><span>WhatsApp-এ যোগাযোগ করুন</span></a></h1> :
-								<h1 className={`text-xs md:text-base cursor-pointer bg-transparent text-glow w-full md:w-fit p-4 rounded-md shadow-lg ${user ? 'fixed' : 'hidden'} bottom-3 left-4 lg:bottom-3 lg:right-20 bg_dark`}>Owner: Toybur Rahman Tuhin <br />Father's Name: Md Ali Hossain <br /> Mobile No: 01773345189 <br /> <a href="https://wa.me/8801773345189" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 w-fit text-teal-200 hover:text-white"><FaWhatsapp aria-hidden="true" /><span>Contact Via WhatsApp</span></a></h1>
+								<h1 className={`text-xs md:text-base cursor-pointer bg-transparent text-glow w-full md:w-fit p-4 rounded-md shadow-lg ${user ? 'fixed' : 'hidden'} bottom-3 left-4 lg:bottom-3 lg:right-20 bg_dark`}>Owner: Toybur Rahman Tuhin <br />Father&apos;s Name: Md Ali Hossain <br /> Mobile No: 01773345189 <br /> <a href="https://wa.me/8801773345189" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 w-fit text-teal-200 hover:text-white"><FaWhatsapp aria-hidden="true" /><span>Contact Via WhatsApp</span></a></h1>
 
 						}
 
@@ -223,14 +241,16 @@ const Home = () => {
 					<h2 className="text-xl mt-4">{!lan ? selectedPhoto.name : selectedPhoto.bangla_name || selectedPhoto.name}</h2>
 					<p className="mt-1">{selectedPhoto.fathers_name}</p>
 					{selectedPhoto.phone_number && <p className="mt-1">{selectedPhoto.phone_number}</p>}
+					<button type="button" onClick={() => { openPhotoRequest({ type: 'photo_change', language: selectedPhoto.language, targetPath: selectedPhoto.targetPath, familyMemberId: selectedPhoto.familyMemberId, currentName: selectedPhoto.name, expectedPhotoURL: selectedPhoto.photoURL }); setSelectedPhoto(null); }} className="mt-5 min-h-11 w-full sm:w-auto border border-teal-500 rounded-lg px-5 py-2">{lan ? 'ছবি পরিবর্তনের আবেদন' : 'Request photo change'}</button>
 				</div>
 			</div>}
 			{photoRequest && <div className="fixed inset-0 z-[60] bg-black/75 flex items-center justify-center p-3 sm:p-5" role="dialog" aria-modal="true" aria-labelledby="photo-request-title" onClick={() => setPhotoRequest(null)}>
 				<form onSubmit={handlePhotoRequestSubmit} className="bg_dark div-glow rounded-xl p-4 sm:p-6 max-w-lg w-full max-h-[92dvh] overflow-y-auto space-y-4" onClick={event => event.stopPropagation()}>
 					<button type="button" className="block ml-auto text-2xl min-w-10 min-h-10" onClick={() => setPhotoRequest(null)} aria-label="Close">×</button>
-					<h2 id="photo-request-title" className="text-xl">{lan ? `${photoRequest.currentName} — ছবি যুক্ত করুন` : `Add a photo for ${photoRequest.currentName}`}</h2>
-					<p className="text-sm opacity-80">{lan ? 'এই সদস্যের কোনো ছবি যুক্ত নেই। ছবি upload করলে admin-এর কাছে approval-এর জন্য request যাবে।' : 'No photo is attached to this member. Uploading a photo will send it to an admin for approval.'}</p>
-					{photoRequestSent ? <p role="status" className="text-teal-200">{lan ? 'ছবির request admin-এর কাছে পাঠানো হয়েছে। Approve হলে tree-তে দেখা যাবে।' : 'Photo request sent to admin. It will appear in the tree after approval.'}</p> : <>
+					<h2 id="photo-request-title" className="text-xl">{photoRequest.type === 'photo_change' ? (lan ? `${photoRequest.currentName} — ছবি পরিবর্তনের আবেদন` : `Request a new photo for ${photoRequest.currentName}`) : (lan ? `${photoRequest.currentName} — ছবি যুক্ত করুন` : `Add a photo for ${photoRequest.currentName}`)}</h2>
+					<p className="text-sm opacity-80">{photoRequest.type === 'photo_change' ? (lan ? 'নতুন ছবি admin-এর কাছে approval-এর জন্য যাবে। Approve হলে বর্তমান ছবি বদলে যাবে।' : 'The new photo will go to an admin for approval. It will replace the current photo after approval.') : (lan ? 'এই সদস্যের কোনো ছবি যুক্ত নেই। ছবি upload করলে admin-এর কাছে approval-এর জন্য request যাবে।' : 'No photo is attached to this member. Uploading a photo will send it to an admin for approval.')}</p>
+					{photoRequest.type === 'photo_change' && <div className="flex items-center gap-3"><img src={photoRequest.expectedPhotoURL} alt="বর্তমান ছবি" className="w-20 h-20 rounded-lg object-cover" /><span className="text-sm opacity-75">{lan ? 'বর্তমান ছবি' : 'Current photo'}</span></div>}
+					{photoRequestSent ? <p role="status" className="text-teal-200">{photoRequest.type === 'photo_change' ? (lan ? 'ছবি পরিবর্তনের request admin-এর কাছে পাঠানো হয়েছে। Approve হলে নতুন ছবি দেখা যাবে।' : 'Photo change request sent to admin. The new photo will appear after approval.') : (lan ? 'ছবির request admin-এর কাছে পাঠানো হয়েছে। Approve হলে tree-তে দেখা যাবে।' : 'Photo request sent to admin. It will appear in the tree after approval.')}</p> : <>
 						<label className="block">{lan ? 'ছবি নির্বাচন করুন (PNG, JPG বা WebP; সর্বোচ্চ ৬ MB)' : 'Choose an image (PNG, JPG or WebP; up to 6 MB)'}<input required type="file" accept="image/png,image/jpeg,image/webp" onChange={event => {
 							const file = event.target.files?.[0];
 							if (!file) return;

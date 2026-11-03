@@ -104,6 +104,12 @@ const EditProfile = () => {
 			<section className="border border-teal-500 shadow-md shadow-teal-500 rounded-2xl p-4 sm:p-6 w-full max-w-xl h-fit">
 				<h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words">{profile?.profile_complete ? 'Edit your profile' : 'Complete your profile'}</h1>
 				<p className="text-center opacity-80 mt-2">সিস্টেম ব্যবহার করতে নিজের তথ্যগুলো পূরণ করুন।</p>
+				<div className='flex flex-col items-center h-fit'>
+					<h1 className="text-center text-glow text-red-400 max-w-lg break-words mt-5">পুরো সিস্টেম বুজতে আগে নিচের এই ভিডিওটি দেখে নিন</h1>
+					<a href='https://youtu.be/ugQ7H-xEVSU' className="border-2 border-teal-500 px-5 py-3 rounded-lg disabled:opacity-50 w-full sm:w-auto mt-4">
+						ভিডিও দেখার জন্য এইখানে চাপ দিন
+					</a>
+				</div>
 				{profileError && <p role="alert" className="text-rose-300 mt-4">{profileError}</p>}
 				<form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
 					<fieldset className="space-y-3"><legend className="font-medium mb-2">আপনি কি ছমর উদ্দিনের পরিবারের সদস্য?</legend>
